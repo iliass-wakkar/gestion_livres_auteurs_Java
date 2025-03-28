@@ -1,20 +1,35 @@
 package View.AuteurView;
 
+import Controleur.AuteurButtonEditorController;
+import View.ButtonEditor;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.util.ArrayList;
+import Modules.Auteur;
+import View.ButtonRenderer;
 import com.formdev.flatlaf.FlatClientProperties;
 
 public class AuteurView extends JPanel {
+    private JButton addButton;
     private JTable table;
     private DefaultTableModel tableModel;
+    private AuteurButtonEditorController buttonEditorController;
 
-    public AuteurView() {
-        initializeUI();
+    public AuteurView(ArrayList<Auteur> auteurList) {
+        buttonEditorController = new AuteurButtonEditorController(this);
+        initializeUI(auteurList);
     }
 
-    private void initializeUI() {
+    public JButton getAddButton() {
+        return addButton;
+    }
+
+    public JTable getTable() {
+        return table;
+    }
+
+    private void initializeUI(ArrayList<Auteur> auteurList) {
         setLayout(new BorderLayout());
         setBackground(new Color(0x2D2D2D));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
@@ -27,30 +42,29 @@ public class AuteurView extends JPanel {
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(new Color(0xAEAEAE));
 
-        JButton addButton = new JButton("Ajouter Auteur");
+        addButton = new JButton("Ajouter Auteur");
         addButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         addButton.setBackground(new Color(0x0096C7));
         addButton.setForeground(Color.WHITE);
         addButton.setFocusPainted(false);
         addButton.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
-        addButton.putClientProperty(FlatClientProperties.STYLE, "arc: 8");
+        addButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
 
         headerPanel.add(titleLabel, BorderLayout.WEST);
         headerPanel.add(addButton, BorderLayout.EAST);
-
-        // Add spacing between header and table
         add(headerPanel, BorderLayout.NORTH);
-        add(Box.createRigidArea(new Dimension(0, 20)), BorderLayout.CENTER); // Add spacing
+        add(Box.createRigidArea(new Dimension(0, 20)), BorderLayout.CENTER);
 
-        // Table Setup
-        String[] columns = {"ID", "Nom", "Nationalité", "Actions", "Détails"};
+        // Create table model with columns
+        String[] columns = {"ID", "Nom", "Nationalité", "Actions"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Make all cells non-editable
+                return column == 3; // Only Actions column is editable
             }
         };
 
+        // Create table with model
         table = new JTable(tableModel) {
             @Override
             public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
@@ -62,78 +76,46 @@ public class AuteurView extends JPanel {
             }
         };
 
-        // Custom renderers
-        table.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
-        table.getColumnModel().getColumn(4).setCellRenderer(new DetailsRenderer());
+        // Configure Actions column
+        TableColumn actionsColumn = table.getColumnModel().getColumn(3);
+        actionsColumn.setCellRenderer(new ButtonRenderer());
+        actionsColumn.setCellEditor(buttonEditorController.getButtonEditor());
 
         // Table styling
         table.setBackground(new Color(0x2D2D2D));
         table.setForeground(new Color(0xAEAEAE));
-        table.setGridColor(new Color(0x4A4A4A)); // Set grid line color
-        table.setShowGrid(true); // Show grid lines
-        table.setIntercellSpacing(new Dimension(1, 1)); // Add spacing between cells
+        table.setGridColor(new Color(0x4A4A4A));
+        table.setShowGrid(true);
+        table.setIntercellSpacing(new Dimension(1, 1));
         table.setSelectionBackground(new Color(0x5A5A5A));
         table.setSelectionForeground(Color.WHITE);
-        table.setRowHeight(40); // Slightly reduce row height
+        table.setRowHeight(40);
         table.getTableHeader().setDefaultRenderer(new HeaderRenderer());
         table.getTableHeader().setBackground(new Color(0x2A2A2A));
         table.getTableHeader().setForeground(new Color(0xAEAEAE));
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
 
-        // Add MouseListener to handle button clicks
-        table.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int row = table.rowAtPoint(e.getPoint());
-                int col = table.columnAtPoint(e.getPoint());
-
-                if (row >= 0 && col == 3) { // Actions column
-                    Rectangle cellRect = table.getCellRect(row, col, false);
-                    if (cellRect.contains(e.getPoint())) {
-                        // Determine which button was clicked
-                        int buttonWidth = cellRect.width / 2;
-                        int clickX = e.getX() - cellRect.x;
-
-                        if (clickX < buttonWidth) {
-                            // Éditer button clicked
-                            JOptionPane.showMessageDialog(AuteurView.this,
-                                    "Éditer l'auteur ID: " + tableModel.getValueAt(row, 0),
-                                    "Éditer", JOptionPane.INFORMATION_MESSAGE);
-                        } else {
-                            // Supprimer button clicked
-                            int confirm = JOptionPane.showConfirmDialog(AuteurView.this,
-                                    "Voulez-vous supprimer l'auteur ID: " + tableModel.getValueAt(row, 0) + "?",
-                                    "Supprimer", JOptionPane.YES_NO_OPTION);
-                            if (confirm == JOptionPane.YES_OPTION) {
-                                tableModel.removeRow(row);
-                            }
-                        }
-                    }
-                } else if (row >= 0 && col == 4) { // Détails column
-                    JOptionPane.showMessageDialog(AuteurView.this,
-                            "Détails de l'auteur ID: " + tableModel.getValueAt(row, 0),
-                            "Détails", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        });
-
-        // Add scroll pane
         JScrollPane scrollPane = new JScrollPane(table);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getViewport().setBackground(new Color(0x2D2D2D));
         add(scrollPane, BorderLayout.CENTER);
 
-        // Sample data (replace with real data)
-        addSampleData();
+        populateTable(auteurList);
     }
 
-    private void addSampleData() {
-        tableModel.addRow(new Object[]{1, "Victor Hugo", "Français", "", ""});
-        tableModel.addRow(new Object[]{2, "Jane Austen", "Anglaise", "", ""});
-        tableModel.addRow(new Object[]{3, "Gabriel García Márquez", "Colombien", "", ""});
+    public void populateTable(ArrayList<Auteur> auteurList) {
+        tableModel.setRowCount(0);
+        for (Auteur auteur : auteurList) {
+            Object[] rowData = {
+                    auteur.getId(),
+                    auteur.getNom(),
+                    auteur.getNationalite(),
+                    "" // Empty string for Actions column
+            };
+            tableModel.addRow(rowData);
+        }
     }
 
-    // Custom header renderer
     private class HeaderRenderer extends DefaultTableCellRenderer {
         public HeaderRenderer() {
             setHorizontalAlignment(SwingConstants.CENTER);
@@ -143,56 +125,14 @@ public class AuteurView extends JPanel {
         }
     }
 
-    // Action buttons renderer
-    private class ButtonRenderer extends JPanel implements TableCellRenderer {
-        public ButtonRenderer() {
-            setLayout(new GridLayout(1, 2, 5, 0)); // Two buttons side by side with spacing
-            setBackground(new Color(0x2D2D2D));
+    public Auteur getAuteurAtRow(int row) {
+        if (row < 0 || row >= tableModel.getRowCount()) {
+            return null;
         }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-            removeAll(); // Clear previous components
-
-            // Edit Button
-            JButton editButton = new JButton("Éditer");
-            editButton.setFont(new Font("Segoe UI", Font.BOLD, 12)); // Larger font
-            editButton.setBackground(new Color(0x0096C7));
-            editButton.setForeground(Color.WHITE);
-            editButton.setFocusPainted(false);
-            editButton.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8)); // Adjust padding
-            editButton.putClientProperty(FlatClientProperties.STYLE, "arc: 6"); // Corner radius
-
-            // Delete Button
-            JButton deleteButton = new JButton("Supprimer");
-            deleteButton.setFont(new Font("Segoe UI", Font.BOLD, 12)); // Larger font
-            deleteButton.setBackground(new Color(0xFF5252)); // Red color
-            deleteButton.setForeground(Color.WHITE);
-            deleteButton.setFocusPainted(false);
-            deleteButton.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8)); // Adjust padding
-            deleteButton.putClientProperty(FlatClientProperties.STYLE, "arc: 6"); // Corner radius
-
-            add(editButton);
-            add(deleteButton);
-            return this;
-        }
-    }
-
-    // Details column renderer
-    private class DetailsRenderer extends JLabel implements TableCellRenderer {
-        public DetailsRenderer() {
-            setForeground(new Color(0x0096C7));
-            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            setHorizontalAlignment(SwingConstants.CENTER);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                                                       boolean isSelected, boolean hasFocus, int row, int column) {
-            setText("<html><u>Voir détails</u></html>");
-            setToolTipText("Afficher les détails de cet auteur");
-            return this;
-        }
+        return new Auteur(
+                (int) tableModel.getValueAt(row, 0),
+                (String) tableModel.getValueAt(row, 1),
+                (String) tableModel.getValueAt(row, 2)
+        );
     }
 }

@@ -1,41 +1,40 @@
 package Controleur;
 
 import Utiles.Connect;
+import Utiles.PopUpMessage;
+import Modules.Livre;
+
 import java.sql.*;
 import java.util.ArrayList;
 
-import Modules.Livre;
 public class GestionLivre {
 
     // CREATE
-    public static void createLivre(String titre, int idAuteur) {
+    public static int createLivre(String titre, int idAuteur) {
         Connection connection = null;
         try {
             connection = Connect.getConnection();
-
-            // Adjusted query to exclude the `id` column since it's auto-incremented
             String query = "INSERT INTO Livre (titre, id_auteur) VALUES (?, ?)";
-
             try (PreparedStatement stmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-                // Set parameters for the query
                 stmt.setString(1, titre);
                 stmt.setInt(2, idAuteur);
 
-                // Execute the query
                 int rows = stmt.executeUpdate();
 
-                // Retrieve the auto-generated ID
                 try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        int generatedId = generatedKeys.getInt(1); // Get the auto-generated ID
-                        System.out.println(rows + " livre(s) créé(s) - ID généré: " + generatedId);
+                        int generatedId = generatedKeys.getInt(1);
+                        new PopUpMessage("success", rows + " livre(s) créé(s) - ID généré: " + generatedId);
+                        return generatedId; // Return the generated ID
                     } else {
-                        System.out.println(rows + " livre(s) créé(s) - ID non disponible");
+                        new PopUpMessage("error", rows + " livre(s) créé(s) - ID non disponible");
+                        return -1; // Indicate failure to generate ID
                     }
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la création du livre: " + e.getMessage());
+            new PopUpMessage("error", "Erreur lors de la création du livre: " + e.getMessage());
+            return -1; // Indicate failure
         } finally {
             Connect.closeConnection(connection);
         }
@@ -49,7 +48,8 @@ public class GestionLivre {
         try {
             // Get database connection
             connection = Connect.getConnection();
-            String query = "SELECT l.id, l.titre, a.nom AS auteur FROM Livre l JOIN Auteur a ON l.id_auteur = a.id";
+            String query = "SELECT l.id, l.titre, l.id_auteur, a.nom AS nom_auteur " +
+                    "FROM Livre l JOIN Auteur a ON l.id_auteur = a.id";
 
             // Execute query
             try (Statement stmt = connection.createStatement();
@@ -59,15 +59,15 @@ public class GestionLivre {
                 while (rs.next()) {
                     int id = rs.getInt("id");
                     String titre = rs.getString("titre");
-                    int auteur = rs.getInt("auteur");
+                    int idAuteur = rs.getInt("id_auteur");
 
                     // Create a Livre object and add it to the list
-                    Livre livre = new Livre(id, titre, auteur);
+                    Livre livre = new Livre(id, titre, idAuteur);
                     livres.add(livre);
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error reading books: " + e.getMessage());
+            new PopUpMessage("error", "Erreur lors de la lecture des livres: " + e.getMessage());
         } finally {
             // Close the connection
             Connect.closeConnection(connection);
@@ -87,46 +87,53 @@ public class GestionLivre {
                 stmt.setInt(1, id);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        System.out.println("\nLivre trouvé:");
-                        System.out.println("---------------------------------");
-                        System.out.printf("ID: %d, Titre: %s, Auteur: %s%n",
+                        String message = String.format(
+                                "Livre trouvé:\n---------------------------------\nID: %d\nTitre: %s\nAuteur: %s\n---------------------------------",
                                 rs.getInt("id"),
                                 rs.getString("titre"),
-                                rs.getString("auteur"));
-                        System.out.println("---------------------------------");
+                                rs.getString("auteur")
+                        );
+                        new PopUpMessage("info", message);
                     } else {
-                        System.out.println("Livre non trouvé");
+                        new PopUpMessage("warning", "Livre non trouvé");
                     }
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error reading book: " + e.getMessage());
+            new PopUpMessage("error", "Erreur lors de la lecture du livre: " + e.getMessage());
         } finally {
             Connect.closeConnection(connection);
         }
     }
 
-    // UPDATE
-    public static void updateLivre(int id, String titre, int idAuteur) {
+    // UPDATED VERSION USING LIVRE OBJECT
+    public static void updateLivre(Livre livre) {
+        if (livre == null) {
+            new PopUpMessage("error", "Livre object cannot be null");
+            return;
+        }
+
         Connection connection = null;
         try {
             connection = Connect.getConnection();
             String query = "UPDATE Livre SET titre = ?, id_auteur = ? WHERE id = ?";
             try (PreparedStatement stmt = connection.prepareStatement(query)) {
-                stmt.setString(1, titre);
-                stmt.setInt(2, idAuteur);
-                stmt.setInt(3, id);
+                stmt.setString(1, livre.getTitre());
+                stmt.setInt(2, livre.getId_auteur());
+                stmt.setInt(3, livre.getId());
+
                 int rows = stmt.executeUpdate();
-                System.out.println(rows + " livre(s) mis à jour - ID: " + id);
+                new PopUpMessage(rows > 0 ? "success" : "warning",
+                        rows > 0 ? "Livre mis à jour" : "Aucun livre modifié");
             }
         } catch (SQLException e) {
-            System.err.println("Error updating book: " + e.getMessage());
+            new PopUpMessage("error", "Erreur de mise à jour: " + e.getMessage());
         } finally {
             Connect.closeConnection(connection);
         }
     }
 
-    // DELETE
+    // Add delete method
     public static void deleteLivre(int id) {
         Connection connection = null;
         try {
@@ -135,10 +142,11 @@ public class GestionLivre {
             try (PreparedStatement stmt = connection.prepareStatement(query)) {
                 stmt.setInt(1, id);
                 int rows = stmt.executeUpdate();
-                System.out.println(rows + " livre(s) supprimé(s) - ID: " + id);
+                new PopUpMessage(rows > 0 ? "success" : "warning",
+                        rows > 0 ? "Livre supprimé" : "Aucun livre supprimé");
             }
         } catch (SQLException e) {
-            System.err.println("Error deleting book: " + e.getMessage());
+            new PopUpMessage("error", "Erreur de suppression: " + e.getMessage());
         } finally {
             Connect.closeConnection(connection);
         }

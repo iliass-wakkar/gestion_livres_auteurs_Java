@@ -1,5 +1,7 @@
 package Utiles;
 
+import Modules.Livre;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -25,38 +27,45 @@ public class PopUpForm<T> extends JDialog {
         this.existingObject = null;
         this.updater = (obj, data) -> {}; // Dummy no-op for insert mode
         setUpUI(fieldNames, null);
-        this.setVisible(true);
     }
 
+    public void setFieldValue(String fieldName, String value) {
+        if (fields.containsKey(fieldName)) {
+            fields.get(fieldName).setText(value);
+        }
+    }
     // Constructor for editing existing objects
     public PopUpForm(String title, String[] fieldNames, T existingObject, BiConsumer<T, Map<String, String>> updater) {
         super((JFrame) null, title, true);
-        this.creator = data -> null; // Dummy no-op for edit mode
+        this.creator = null;
         this.isEditMode = true;
         this.existingObject = existingObject;
         this.updater = updater;
 
-        // Extract data from the existing object using reflection
-        Map<String, Object> data = new HashMap<>();
-        for (String fieldName : fieldNames) {
-            try {
-                var field = existingObject.getClass().getDeclaredField(fieldName.toLowerCase());
-                field.setAccessible(true);
-                data.put(fieldName, field.get(existingObject));
-            } catch (Exception e) {
-                System.err.println("Error extracting field: " + fieldName);
-                data.put(fieldName, "");
+        Object[] data = extractFieldValues(existingObject, fieldNames);
+        setUpUI(fieldNames, data);
+    }
+
+    //function to extract fields
+    private Object[] extractFieldValues(T object, String[] fieldNames) {
+        if (object instanceof Livre) {
+            Livre livre = (Livre) object;
+            Object[] values = new Object[fieldNames.length];
+            for (int i = 0; i < fieldNames.length; i++) {
+                switch (fieldNames[i]) {
+                    case "Titre":
+                        values[i] = livre.getTitre();
+                        break;
+                    case "ID Auteur":
+                        values[i] = livre.getId_auteur();
+                        break;
+                    default:
+                        values[i] = "";
+                }
             }
+            return values;
         }
-
-        // Convert data to Object[] for pre-filling
-        Object[] dataArray = new Object[fieldNames.length];
-        for (int i = 0; i < fieldNames.length; i++) {
-            dataArray[i] = data.get(fieldNames[i]);
-        }
-
-        setUpUI(fieldNames, dataArray);
-        this.setVisible(true);
+        throw new IllegalArgumentException("Unsupported object type");
     }
 
     public JButton getSaveButton() {
@@ -137,6 +146,7 @@ public class PopUpForm<T> extends JDialog {
         saveButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
         saveButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         saveButton.setPreferredSize(new Dimension(120, 30));
+        saveButton.putClientProperty("JButton.buttonType", "none");
 
         cancelButton.setFont(new Font("Segoe UI", Font.BOLD, 14));
         cancelButton.setBackground(new Color(0xFF5252));
@@ -146,12 +156,6 @@ public class PopUpForm<T> extends JDialog {
         cancelButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         cancelButton.setPreferredSize(new Dimension(120, 30));
 
-        // Button actions
-        saveButton.addActionListener(e -> {
-            if (validateForm()) {
-                dispose();
-            }
-        });
         cancelButton.addActionListener(e -> dispose());
 
         // Centered button panel
@@ -166,7 +170,7 @@ public class PopUpForm<T> extends JDialog {
     }
 
     // Validates the form
-    private boolean validateForm() {
+    public boolean validateForm() {
         for (Map.Entry<String, JTextField> entry : fields.entrySet()) {
             String fieldValue = entry.getValue().getText().trim();
             if (fieldValue.isEmpty()) {
@@ -177,53 +181,31 @@ public class PopUpForm<T> extends JDialog {
         return true;
     }
 
-    // Example usage for Livre
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            // For inserting a new Livre
-            PopUpForm<Livre> addForm = new PopUpForm<>(
-                    "Ajouter Livre",
-                    new String[]{"Titre", "Auteur"},
-                    data -> new Livre(data.get("Titre"), data.get("Auteur"))
-            );
-            Livre newLivre = addForm.getObject();
-            System.out.println("Nouveau livre: " + newLivre);
-
-            // For editing an existing Livre
-            Livre existingLivre = new Livre("Les Misérables", "Victor Hugo");
-            PopUpForm<Livre> editForm = new PopUpForm<>(
-                    "Modifier Livre",
-                    new String[]{"Titre", "Auteur"},
-                    existingLivre,
-                    (livre, data) -> {
-                        livre.setTitre(data.get("Titre"));
-                        livre.setAuteur(data.get("Auteur"));
-                    }
-            );
-            Livre updatedLivre = editForm.getObject();
-            System.out.println("Livre modifié: " + updatedLivre);
-        });
-    }
-}
-
-// Example Livre class (replace with your actual class)
-class Livre {
-    private String titre;
-    private String auteur;
-
-    public Livre(String titre, String auteur) {
-        this.titre = titre;
-        this.auteur = auteur;
-    }
-
-    // Getters and setters
-    public String getTitre() { return titre; }
-    public void setTitre(String titre) { this.titre = titre; }
-    public String getAuteur() { return auteur; }
-    public void setAuteur(String auteur) { this.auteur = auteur; }
-
-    @Override
-    public String toString() {
-        return "Livre{titre='" + titre + "', auteur='" + auteur + "'}";
-    }
+//    // Example usage for Livre
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            // For inserting a new Livre
+//            PopUpForm<Livre> addForm = new PopUpForm<>(
+//                    "Ajouter Livre",
+//                    new String[]{"Titre", "Auteur"},
+//                    data -> new Livre(data.get("Titre"), data.get("Auteur"))
+//            );
+//            Livre newLivre = addForm.getObject();
+//            System.out.println("Nouveau livre: " + newLivre);
+//
+//            // For editing an existing Livre
+//            Livre existingLivre = new Livre("Les Misérables", 2);
+//            PopUpForm<Livre> editForm = new PopUpForm<>(
+//                    "Modifier Livre",
+//                    new String[]{"Titre", "Auteur"},
+//                    existingLivre,
+//                    (livre, data) -> {
+//                        livre.setTitre(data.get("Titre"));
+//                        livre.setAuteur(data.get("Auteur"));
+//                    }
+//            );
+//            Livre updatedLivre = editForm.getObject();
+//            System.out.println("Livre modifié: " + updatedLivre);
+//        });
+//    }
 }

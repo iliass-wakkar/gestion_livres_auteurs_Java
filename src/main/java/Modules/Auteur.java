@@ -1,15 +1,14 @@
 package Modules;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class Acteur {
+public class Auteur {
 private  int id;
 private String nom;
 private String nationalite;
 private ArrayList<Livre> livres = null;
 
-    public Acteur(int id, String nom, String nationalite) {
+    public Auteur(int id, String nom, String nationalite) {
         this.id = id;
         this.nom = nom;
         this.nationalite = nationalite;

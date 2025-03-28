@@ -2,17 +2,21 @@ package View;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.border.EmptyBorder;
 
+import Controleur.GestionLivre;
 import Controleur.GestionLivreView;
+import Modules.Livre;
 import View.AuteurView.AuteurView;
 import View.LivreView.LivreView;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 public class MainFrame extends JFrame {
     private AuteurView auteurView = new AuteurView();
-    private GestionLivreView gestionLivreView = new GestionLivreView();
-    private LivreView livreView = gestionLivreView.getLivreView();
+    private ArrayList<Livre> livreList = GestionLivre.readAllLivres();
+    private LivreView livreView = new LivreView(livreList);
+    private GestionLivreView gestionLivreView = new GestionLivreView(livreView);
 
     public MainFrame() {
         initializeUI();

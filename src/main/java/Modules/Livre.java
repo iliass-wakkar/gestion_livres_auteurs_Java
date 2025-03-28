@@ -11,6 +11,11 @@ public class Livre {
         this.id_auteur = id_auteur;
     }
 
+    public Livre(String titre, int id_auteur) {
+        this.titre = titre;
+        this.id_auteur = id_auteur;
+    }
+
     public int getId() {
         return id;
     }
