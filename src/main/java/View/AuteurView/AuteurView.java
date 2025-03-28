@@ -56,11 +56,11 @@ public class AuteurView extends JPanel {
         add(Box.createRigidArea(new Dimension(0, 20)), BorderLayout.CENTER);
 
         // Create table model with columns
-        String[] columns = {"ID", "Nom", "Nationalité", "Actions"};
+        String[] columns = {"ID", "Nom", "Nationalité", "Actions", "Livres"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 3; // Only Actions column is editable
+                return column == 3 || column == 4; // Actions and Livres columns are editable
             }
         };
 
@@ -80,6 +80,11 @@ public class AuteurView extends JPanel {
         TableColumn actionsColumn = table.getColumnModel().getColumn(3);
         actionsColumn.setCellRenderer(new ButtonRenderer());
         actionsColumn.setCellEditor(buttonEditorController.getButtonEditor());
+
+        // Configure Livres column
+        TableColumn livresColumn = table.getColumnModel().getColumn(4);
+        livresColumn.setCellRenderer(new LivresButtonRenderer());
+        livresColumn.setCellEditor(buttonEditorController.getLivresButtonEditor());
 
         // Table styling
         table.setBackground(new Color(0x2D2D2D));
@@ -110,7 +115,8 @@ public class AuteurView extends JPanel {
                     auteur.getId(),
                     auteur.getNom(),
                     auteur.getNationalite(),
-                    "" // Empty string for Actions column
+                    "", // Empty string for Actions column
+                    ""  // Empty string for Livres column
             };
             tableModel.addRow(rowData);
         }
@@ -122,6 +128,30 @@ public class AuteurView extends JPanel {
             setFont(new Font("Segoe UI", Font.BOLD, 14));
             setBackground(new Color(0x2A2A2A));
             setForeground(new Color(0xAEAEAE));
+        }
+    }
+
+    private class LivresButtonRenderer extends JButton implements TableCellRenderer {
+        public LivresButtonRenderer() {
+            setOpaque(true);
+            setText("Livres");
+            setBackground(new Color(0x4CAF50)); // Green color
+            setForeground(Color.WHITE);
+            setFocusPainted(false);
+            setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+            putClientProperty(FlatClientProperties.BUTTON_TYPE,
+                    FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
+            if (isSelected) {
+                setBackground(new Color(0x388E3C)); // Darker green when selected
+            } else {
+                setBackground(new Color(0x4CAF50));
+            }
+            return this;
         }
     }
 

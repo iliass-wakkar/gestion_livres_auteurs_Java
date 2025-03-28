@@ -9,12 +9,14 @@ import Modules.Livre;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.util.HashMap;
+import java.util.Map;
 
-public class ButtonEditorController {
+public class LivreButtonEditorController {
     private LivreView livreView;
     private PopUpForm<Livre> editForm;
 
-    public ButtonEditorController(LivreView livreView) {
+    public LivreButtonEditorController(LivreView livreView) {
         this.livreView = livreView;
     }
 
@@ -27,6 +29,7 @@ public class ButtonEditorController {
             }
 
             // Create and show edit form immediately
+            // When creating a Livre form:
             editForm = new PopUpForm<>(
                     "Modifier un Livre",
                     new String[]{"Titre", "ID Auteur"},
@@ -34,6 +37,12 @@ public class ButtonEditorController {
                     (livre, data) -> {
                         livre.setTitre(data.get("Titre"));
                         livre.setId_auteur(Integer.parseInt(data.get("ID Auteur")));
+                    },
+                    livre -> {
+                        Map<String, String> values = new HashMap<>();
+                        values.put("Titre", livre.getTitre());
+                        values.put("ID Auteur", String.valueOf(livre.getId_auteur()));
+                        return values;
                     }
             );
 
@@ -80,12 +89,12 @@ public class ButtonEditorController {
         return new ButtonEditor(livreView.getTable(), new IButtonEditorEventsHandler() {
             @Override
             public void onEdit(int row) {
-                ButtonEditorController.this.onEdit(row);
+                LivreButtonEditorController.this.onEdit(row);
             }
 
             @Override
             public void onDelete(int row) {
-                ButtonEditorController.this.onDelete(row);
+                LivreButtonEditorController.this.onDelete(row);
             }
         });
     }

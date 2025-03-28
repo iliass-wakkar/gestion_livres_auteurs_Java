@@ -5,15 +5,20 @@ import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.border.EmptyBorder;
 
+import Controleur.AuteurViewController;
+import Controleur.GestionAuteur;
 import Controleur.GestionLivre;
 import Controleur.GestionLivreView;
+import Modules.Auteur;
 import Modules.Livre;
 import View.AuteurView.AuteurView;
 import View.LivreView.LivreView;
 import com.formdev.flatlaf.FlatDarkLaf;
 
 public class MainFrame extends JFrame {
-    private AuteurView auteurView = new AuteurView();
+    private ArrayList<Auteur>  auteurList = GestionAuteur.readAllAuteurs();
+    private AuteurView auteurView = new AuteurView(auteurList);
+    private AuteurViewController auteurViewController = new AuteurViewController(auteurView);
     private ArrayList<Livre> livreList = GestionLivre.readAllLivres();
     private LivreView livreView = new LivreView(livreList);
     private GestionLivreView gestionLivreView = new GestionLivreView(livreView);

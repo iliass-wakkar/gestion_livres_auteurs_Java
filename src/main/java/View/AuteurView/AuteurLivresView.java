@@ -1,28 +1,17 @@
-package View.LivreView;
-
-import Controleur.LivreButtonEditorController;
+package View.AuteurView;
 
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.util.ArrayList;
 import Modules.Livre;
-import View.ButtonRenderer;
-import com.formdev.flatlaf.FlatClientProperties;
 
-public class LivreView extends JPanel {
-    private JButton addButton;
+public class AuteurLivresView extends JPanel {
     private JTable table;
     private DefaultTableModel tableModel;
-    private LivreButtonEditorController livreButtonEditorController;
 
-    public LivreView(ArrayList<Livre> livreList) {
-        livreButtonEditorController = new LivreButtonEditorController(this);
+    public AuteurLivresView(ArrayList<Livre> livreList) {
         initializeUI(livreList);
-    }
-
-    public JButton getAddButton() {
-        return addButton;
     }
 
     public JTable getTable() {
@@ -42,25 +31,16 @@ public class LivreView extends JPanel {
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
         titleLabel.setForeground(new Color(0xAEAEAE));
 
-        addButton = new JButton("Ajouter Livre");
-        addButton.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        addButton.setBackground(new Color(0x0096C7));
-        addButton.setForeground(Color.WHITE);
-        addButton.setFocusPainted(false);
-        addButton.setBorder(BorderFactory.createEmptyBorder(8, 16, 8, 16));
-        addButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
-
         headerPanel.add(titleLabel, BorderLayout.WEST);
-        headerPanel.add(addButton, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
         add(Box.createRigidArea(new Dimension(0, 20)), BorderLayout.CENTER);
 
-        // Create table model with columns
-        String[] columns = {"ID", "Titre", "ID Auteur", "Actions"};
+        // Create table model with columns (without ID Auteur)
+        String[] columns = {"ID", "Titre"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 3; // Only Actions column is editable
+                return false; // Make all cells non-editable
             }
         };
 
@@ -75,11 +55,6 @@ public class LivreView extends JPanel {
                 return c;
             }
         };
-
-        // Configure Actions column
-        TableColumn actionsColumn = table.getColumnModel().getColumn(3);
-        actionsColumn.setCellRenderer(new ButtonRenderer());
-        actionsColumn.setCellEditor(livreButtonEditorController.getButtonEditor());
 
         // Table styling
         table.setBackground(new Color(0x2D2D2D));
@@ -108,9 +83,7 @@ public class LivreView extends JPanel {
         for (Livre livre : livreList) {
             Object[] rowData = {
                     livre.getId(),
-                    livre.getTitre(),
-                    livre.getId_auteur(),
-                    "" // Empty string for Actions column
+                    livre.getTitre()
             };
             tableModel.addRow(rowData);
         }
@@ -132,7 +105,7 @@ public class LivreView extends JPanel {
         return new Livre(
                 (int) tableModel.getValueAt(row, 0),
                 (String) tableModel.getValueAt(row, 1),
-                (int) tableModel.getValueAt(row, 2)
+                -1 // No author ID available in this view
         );
     }
 }
