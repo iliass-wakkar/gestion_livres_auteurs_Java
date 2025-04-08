@@ -2,8 +2,6 @@ Here's a polished and structured README.md based on your project details:
 
 # Gestion des Livres et Auteurs 📚
 
-![Java Swing Demo](screenshot.png) <!-- Add your app screenshot here -->
-
 ## 🎯 Project Overview
 A desktop application to manage books and authors with full CRUD operations, built in 5 days using Java Swing and MySQL. Perfect for small libraries or book enthusiasts who want to organize their collections digitally!
 
