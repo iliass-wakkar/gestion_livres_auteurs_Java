@@ -103,8 +103,3 @@ Made with ❤️ in 4IIR9
 Check our [project report](docs/rapport.pdf) for full technical details
 ```
 
-
-3. Add a LICENSE.md file
-4. Include the actual database schema in `/src/db`
-
-The hashtags would work better in the GitHub repo description rather than the README itself. Let me know if you want to adjust the tone or add specific sections!
