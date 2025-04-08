@@ -78,10 +78,10 @@ A desktop application to manage books and authors with full CRUD operations, bui
 ![View Author's Books](images/6.jpg)
 
 ## 🧑💻 Contributors
-| Name | GitHub | Portfolio |
-|------|--------|-----------|
-| Rochdi Mohamed Amine | [@rochdi]([https://github.com](https://github.com/Rocmine)) | [Portfolio]([https://lnkd.in/gstGipcS](https://rocmine.net/)) |
-| Iliass Wakkar | [@iliass]([https://github.com](https://github.com/iliass-wakkar)) | [Portfolio]([https://lnkd.in/gstGipcS](https://iliass-wakkar.github.io/portfolio/)) |
+| Name               | GitHub                                   | Portfolio                                      |
+|--------------------|------------------------------------------|------------------------------------------------|
+| Rochdi Mohamed Amine | [@rochdi](https://github.com/Rocmine)   | [Portfolio](https://rocmine.net/)              |
+| Iliass Wakkar      | [@iliass](https://github.com/iliass-wakkar) | [Portfolio](https://iliass-wakkar.github.io/portfolio/) |
 
 ## 📈 Future Enhancements
 - 🔍 Full-text search
