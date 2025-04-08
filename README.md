@@ -1,61 +1,44 @@
-Here's a polished README.md based on your project details and style preferences:
+Here's a polished and structured README.md based on your project details:
 
-```markdown
-📚 Gestion des Livres et Auteurs 📚
-==================================
+# Gestion des Livres et Auteurs 📚
 
-**A desktop app for book lovers!** 💻 Manage authors and their literary works with ease using our Java-powered CRUD system.
+![Java Swing Demo](screenshot.png) <!-- Add your app screenshot here -->
 
-![Java Swing UI](screenshots/ui-preview.png) *Sample interface showing book management view*
+## 🎯 Project Overview
+A desktop application to manage books and authors with full CRUD operations, built in 5 days using Java Swing and MySQL. Perfect for small libraries or book enthusiasts who want to organize their collections digitally!
 
-✨ Key Features ✨
------------------
-- **Complete CRUD Operations** for both Books & Authors
+## 🌟 Features
+- **Complete CRUD Operations** for:
+  - 📖 **Books**: Manage titles and link to authors
+  - 🧑🏫 **Authors**: Track names and nationalities
 - **Real-time Database Sync** with MySQL
-- **Interactive Tables** (Edit/Delete with single clicks)
-- **FK Constraint Handling** (Prevents orphaned records)
-- **Clean MVC Architecture** for scalability
-- **Dynamic UI Updates** using `fireTableDataChanged()`
+- **Interactive Tables** with:
+  - Edit/Delete buttons in-line
+  - Automatic refresh after updates
+- **MVC Architecture** for clean code organization
+- **Data Validation** (e.g., required title field)
+- **Foreign Key Protection** (Prevents deleting authors with existing books)
 
-🛠️ Tech Stack 🛠️
----------------
-- **Frontend:** Java Swing (Custom UI components)
-- **Database:** MySQL + JDBC Connector
-- **Architecture:** MVC Pattern
-- **Validation:** Input sanitization & error handling
+## 🛠️ Tech Stack
+| Component | Technology |
+|-----------|------------|
+| Frontend  | Java Swing |
+| Database  | MySQL      |
+| Connector | JDBC       |
+| Pattern   | MVC        |
 
-📦 Project Structure 📦
-----------------------
-```sql
-DATABASE SCHEMA
----------------
-CREATE TABLE Auteur (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nom VARCHAR(50) NOT NULL,
-    prenom VARCHAR(50),
-    nationalite VARCHAR(50)
-);
-
-CREATE TABLE Livre (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    titre VARCHAR(100) NOT NULL,
-    genre VARCHAR(50),
-    id_auteur INT,
-    FOREIGN KEY (id_auteur) REFERENCES Auteur(id)
-);
-```
-
-🚀 Getting Started 🚀
---------------------
+## 🚀 Getting Started
 1. **Clone the repo**  
    `git clone https://lnkd.in/gzdpnqkt`
 
-2. **Setup MySQL Database**  
-   - Create database `biblio`
-   - Import schema from `db/schema.sql`
+2. **Set up MySQL database**  
+   ```sql
+   CREATE DATABASE biblio;
+   CREATE TABLE Auteur (...); -- Full script in /src/db
+   CREATE TABLE Livre (...);
 
-3. **Configure Connection**  
-   Update `DatabaseConnection.java` with your credentials:
+
+3. **Update database credentials** in `DatabaseConnection.java`:
    ```java
    DriverManager.getConnection(
        "jdbc:mysql://localhost:3306/biblio", 
@@ -64,36 +47,55 @@ CREATE TABLE Livre (
    );
    ```
 
-4. **Run the app**  
-   Launch `Main.java` to start the application
+4. **Run the application**  
+   `java -jar GestionBiblio.jar` or execute through your IDE
 
-💡 Challenges We Solved 💡
--------------------------
-- ✅ Dynamic table refresh after DB operations
-- ✅ Custom button renderers in JTable
-- ✅ FK constraint management with user feedback
-- ✅ Generic form validation system
+## 📝 Usage Demo
+1. **Author List** 
+![list Author](images/1.png)
+2. **Add Author** → Automatically appears in author list
+![Add Author](images/2.png)
+3. **Book List** 
+   [Books List](images/3.png)
+4. **Create Book** → Select author from dropdown
+![Create Book](images/7.png)
+5. **Edit** → Directly from table buttons
+![Edit](images/4.png)
+6. **Delete** → Directly from table buttons
+   [Delete](images/5.png)
+7. **View Author's Books** → Click "Livres" button in author view
+![View Author's Books](images/6.png)
 
-👥 Credits 👥
-------------
-Developed with ❤️ by:  
-**Rochdi Mohamed Amine** & **Iliass Wakkar**  
-4IIR9 Students | Java Enthusiasts
+## 🧑💻 Contributors
+| Name | GitHub | Portfolio |
+|------|--------|-----------|
+| Rochdi Mohamed Amine | [@rochdi]([https://github.com](https://github.com/Rocmine)) | [Portfolio]([https://lnkd.in/gstGipcS](https://rocmine.net/)) |
+| Iliass Wakkar | [@iliass]([https://github.com](https://github.com/iliass-wakkar)) | [Portfolio]([https://lnkd.in/gstGipcS](https://iliass-wakkar.github.io/portfolio/)) |
 
-🔗 Links 🔗
-----------
-- [GitHub Repo](https://lnkd.in/gzdpnqkt)
-- [Our Portfolios](https://lnkd.in/gstGipcS)
+## 📈 Future Enhancements
+- 🔍 Full-text search
+- 📊 Author publication statistics
+- 📤 CSV/PDF export
+- 🔒 User authentication system
 
-#JavaProject #CRUDApp #DesktopApp #JavaSwing #MySQL #JDBC #MVCArchitecture #BookManager #StudentProject #CodeCraft
+## ⚠️ Known Limitations
+- Requires manual database setup
+- Single-user access only
+- Basic error handling (to be enhanced)
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+---
+
+Made with ❤️ in 4IIR9  
+Check our [project report](docs/rapport.pdf) for full technical details
 ```
 
-This version:  
-1. Adds visual hierarchy with emojis and formatting  
-2. Includes a database schema snippet  
-3. Provides clear setup instructions  
-4. Highlights technical challenges overcome  
-5. Maintains your branding with the original hashtags  
-6. Uses markdown features for better readability
+### Customization Tips:
+1. Add a 600x400px screenshot of your app to the `screenshot.png` placeholder
+2. Replace the portfolio links with actual URLs
+3. Add a LICENSE.md file
+4. Include the actual database schema in `/src/db`
 
-Would you like me to add any specific sections or modify any part of this structure?
+The hashtags would work better in the GitHub repo description rather than the README itself. Let me know if you want to adjust the tone or add specific sections!
