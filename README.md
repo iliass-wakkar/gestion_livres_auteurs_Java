@@ -50,19 +50,19 @@ A desktop application to manage books and authors with full CRUD operations, bui
 
 ## 📝 Usage Demo
 1. **Author List** 
-![list Author](images/1.png)
+![list Author](images/1.jpg)
 2. **Add Author** → Automatically appears in author list
-![Add Author](images/2.png)
+![Add Author](images/2.jpg)
 3. **Book List** 
-   [Books List](images/3.png)
+   [Books List](images/3.jpg)
 4. **Create Book** → Select author from dropdown
-![Create Book](images/7.png)
+![Create Book](images/7.jpg)
 5. **Edit** → Directly from table buttons
-![Edit](images/4.png)
+![Edit](images/4.jpg)
 6. **Delete** → Directly from table buttons
-   [Delete](images/5.png)
+   [Delete](images/5.jpg)
 7. **View Author's Books** → Click "Livres" button in author view
-![View Author's Books](images/6.png)
+![View Author's Books](images/6.jpg)
 
 ## 🧑💻 Contributors
 | Name | GitHub | Portfolio |
