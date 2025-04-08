@@ -92,9 +92,7 @@ Made with ❤️ in 4IIR9
 Check our [project report](docs/rapport.pdf) for full technical details
 ```
 
-### Customization Tips:
-1. Add a 600x400px screenshot of your app to the `screenshot.png` placeholder
-2. Replace the portfolio links with actual URLs
+
 3. Add a LICENSE.md file
 4. Include the actual database schema in `/src/db`
 
