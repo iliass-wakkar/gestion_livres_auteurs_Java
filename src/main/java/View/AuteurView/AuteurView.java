@@ -5,6 +5,8 @@ import View.ButtonEditor;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import Modules.Auteur;
 import View.ButtonRenderer;
@@ -135,12 +137,30 @@ public class AuteurView extends JPanel {
         public LivresButtonRenderer() {
             setOpaque(true);
             setText("Livres");
-            setBackground(new Color(0x4CAF50)); // Green color
+            setFont(new Font("Segoe UI", Font.BOLD, 12));
+            setBackground(new Color(0x4CAF50)); // Base green color
             setForeground(Color.WHITE);
             setFocusPainted(false);
-            setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(new Color(0x388E3C), 1), // Darker border
+                    BorderFactory.createEmptyBorder(6, 12, 6, 12)
+            ));
+            setCursor(new Cursor(Cursor.HAND_CURSOR));
             putClientProperty(FlatClientProperties.BUTTON_TYPE,
                     FlatClientProperties.BUTTON_TYPE_ROUND_RECT);
+
+            // Add hover effect
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    setBackground(new Color(0x43A047)); // Slightly darker on hover
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    setBackground(new Color(0x4CAF50)); // Original color
+                }
+            });
         }
 
         @Override
@@ -149,7 +169,7 @@ public class AuteurView extends JPanel {
             if (isSelected) {
                 setBackground(new Color(0x388E3C)); // Darker green when selected
             } else {
-                setBackground(new Color(0x4CAF50));
+                setBackground(new Color(0x4CAF50)); // Normal state
             }
             return this;
         }

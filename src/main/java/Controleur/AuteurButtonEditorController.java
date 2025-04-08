@@ -32,7 +32,6 @@ public class AuteurButtonEditorController {
             new PopUpMessage("error", "Aucun auteur sélectionné");
             return;
         }
-
         // In your onEdit method:
         editForm = new PopUpForm<>(
                 "Modifier un Auteur",
