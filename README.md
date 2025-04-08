@@ -100,6 +100,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 ---
 
 Made with ❤️ in 4IIR9  
-Check our [project report](docs/rapport.pdf) for full technical details
-```
-
+Check our [project report](docs/rapport.pdf) for full technical details\
